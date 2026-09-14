@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { MockProvider } from "@/providers/mock-provider";
 import QueryProvider from "@/providers/query-provider";
 import StoreProvider from "@/providers/store-provider";
+import { DummyLoginProvider } from "@/providers/dummy-login-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,16 +28,18 @@ export default function RootLayout({
       <body>
         <MockProvider isMocking={isMocking!}>
           <QueryProvider>
-            <StoreProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
-            </StoreProvider>
+            <DummyLoginProvider>
+              <StoreProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  {children}
+                </ThemeProvider>
+              </StoreProvider>
+            </DummyLoginProvider>
           </QueryProvider>
         </MockProvider>
       </body>
