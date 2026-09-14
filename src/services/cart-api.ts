@@ -13,16 +13,17 @@ export const cartApi = {
       .then((res) => res.data.data ?? []);
   },
 
-  addToCart: async (request: AddToCartDto[]): Promise<AddToCartDto[]> => {
+  addToCart: async (request: AddToCartDto): Promise<AddToCartDto | null> => {
     return await axiosInstance
-      .post<WebRes<AddToCartDto[]>>("/carts/add", request)
-      .then((res) => res.data.data ?? []);
+      .post<WebRes<AddToCartDto>>("/carts/user/add", request)
+      .then((res) => res.data.data ?? null);
   },
 
-  removeFromCart: async (request: RemoveFromCartDto[]): Promise<WebRes> => {
-    return await axiosInstance.post<WebRes<RemoveFromCartDto[]>>(
-      "/carts/remove",
-      request,
-    );
+  removeFromCart: async (
+    request: RemoveFromCartDto,
+  ): Promise<RemoveFromCartDto | null> => {
+    return await axiosInstance
+      .post<WebRes<RemoveFromCartDto>>("/carts/user/remove", request)
+      .then((res) => res.data.data ?? null);
   },
 };

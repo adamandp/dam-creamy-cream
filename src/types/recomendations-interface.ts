@@ -4,6 +4,7 @@ interface CategoriesRecomendationRes {
   id: string;
   imageUrl: string;
   category: string;
+  categoryId: string;
 }
 
 interface ProductRecomendationRes {
@@ -12,7 +13,7 @@ interface ProductRecomendationRes {
   imageUrl: string;
   description: string;
   rate: number;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   discountType?: DiscountTypeEnum | null;
   discountValue?: number | null;

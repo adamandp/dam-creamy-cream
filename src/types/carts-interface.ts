@@ -13,7 +13,7 @@ interface CartItemRes {
   name: string;
   imageUrl: string;
   category: string;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   qty: number;
 }

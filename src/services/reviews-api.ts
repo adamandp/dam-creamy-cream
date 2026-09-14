@@ -11,7 +11,7 @@ export const reviewsApi = {
 
   getProductReview: async (id: string): Promise<ReviewRes[]> => {
     return await axiosInstance
-      .get<WebRes<ReviewRes[]>>(`/product/reviews/${id}`)
+      .get<WebRes<ReviewRes[]>>(`/reviews/product/${id}`)
       .then((res) => res.data.data ?? []);
   },
 };

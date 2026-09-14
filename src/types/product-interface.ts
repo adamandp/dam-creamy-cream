@@ -12,7 +12,7 @@ interface ProductRes {
   rate: number;
   category: string;
   sales: number;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   discountType?: DiscountTypeEnum | null;
   discountValue?: number | null;

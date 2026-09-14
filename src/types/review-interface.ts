@@ -9,7 +9,7 @@ interface ReviewDto {
 interface ReviewRes {
   id: UUID;
   rate: number;
-  review: string;
+  comment: string;
   name: string;
   imageUrl: string;
   createdAt: string;

@@ -1,6 +1,5 @@
 import { WebResponse as WebRes } from "@/types/common-interface";
 import { ProductInformationRes, ProductRes } from "@/types/product-interface";
-import { ReviewRes } from "@/types/review-interface";
 import axiosInstance from "@/utils/axios-instance";
 
 export const productApi = {
@@ -8,12 +7,6 @@ export const productApi = {
     return await axiosInstance
       .get<WebRes<ProductRes>>(`/product/${id}`)
       .then((res) => res.data?.data ?? null);
-  },
-
-  getProductReview: async (id: string): Promise<ReviewRes[]> => {
-    return await axiosInstance
-      .get<WebRes<ReviewRes[]>>(`/product/reviews/${id}`)
-      .then((res) => res.data.data ?? []);
   },
 
   getProductInformation: async (id: string): Promise<ProductInformationRes> => {

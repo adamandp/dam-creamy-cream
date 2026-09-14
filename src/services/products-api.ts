@@ -5,7 +5,7 @@ import axiosInstance from "@/utils/axios-instance";
 export const productsApi = {
   getCatalog: async (query: CatalogDto): Promise<CatalogRes[]> => {
     return await axiosInstance
-      .get<WebRes<CatalogRes[]>>("/products", {
+      .get<WebRes<CatalogRes[]>>("/products/catalog", {
         params: {
           q: query.q,
           sort: query.sort,

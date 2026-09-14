@@ -15,7 +15,7 @@ interface CatalogRes {
   imageUrl: string;
   description: string;
   rate: number;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   discountType?: DiscountTypeEnum | null;
   discountValue?: number | null;
