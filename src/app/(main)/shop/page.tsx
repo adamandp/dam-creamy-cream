@@ -6,6 +6,7 @@ import ShopSearchbar from "@/components/shop/shop-search-bar";
 import { SelectSorting } from "@/components/shop/shop-sorting";
 import { categoriesApi } from "@/services/categories-api";
 import { productsApi } from "@/services/products-api";
+import { CatalogDto } from "@/types/products-interface";
 import { getQueryClient } from "@/utils/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
@@ -24,7 +25,7 @@ export default async function Shop({
 
   const filters = {
     q: params.q || undefined,
-    sort: (params.sort as any) || undefined,
+    sort: (params.sort as CatalogDto["sort"]) || undefined,
     min: params.min ? Number(params.min) : undefined,
     max: params.max ? Number(params.max) : undefined,
     cat: params.cat ? params.cat.split(",") : undefined,

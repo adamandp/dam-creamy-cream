@@ -34,6 +34,7 @@ export default function Banner() {
               width={1000}
               height={1000}
               className="object-contain absolute left-c-10 top-c-5 w-c-167-5"
+              loading="eager"
             />
           </div>
         </div>
@@ -44,6 +45,7 @@ export default function Banner() {
         width={1000}
         height={1000}
         className="object-contain absolute left-0 top-[5%] w-c-61"
+        loading="eager"
       />
       <div className="bg-[url('/home/banner/WaveEffects.svg')] dark:bg-[url('/home/banner/WaveEffectsDark.svg')] bg-repeat h-c-25 w-full absolute bottom-0 text-black fill-black" />
     </div>

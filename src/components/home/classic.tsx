@@ -10,7 +10,7 @@ import { ProductRecomendationRes } from "@/types/recomendations-interface";
 
 export default function Classic() {
   const { data: favorites, isLoading } = useQuery<ProductRecomendationRes[]>({
-    queryKey: ["classic-recomendations"],
+    queryKey: ["classic-recommendations"],
     queryFn: getRecomendations.classic,
   });
 
@@ -64,6 +64,7 @@ export default function Classic() {
         width={1000}
         height={1000}
         className="w-c-70-5 absolute left-0 top-[5%] pointer-events-none"
+        loading="eager"
       />
       <Image
         src="/home/classic/classic-rightimage.png"
@@ -71,6 +72,7 @@ export default function Classic() {
         width={1000}
         height={1000}
         className="w-c-53 absolute right-0 bottom-[5%] pointer-events-none"
+        loading="eager"
       />
     </section>
   );

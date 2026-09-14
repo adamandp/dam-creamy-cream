@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { CategoriesRecomendationRes } from "@/types/recomendations-interface";
 import { getRecomendations } from "@/services/recomendations-api";
+import { useRouter } from "next/navigation";
 
 function CategoryCardSkeleton() {
   return (
@@ -27,6 +28,8 @@ function CategoryCardSkeleton() {
 }
 
 export default function Categories() {
+  const router = useRouter();
+
   const { data: categories, isLoading } = useQuery<
     CategoriesRecomendationRes[]
   >({
@@ -69,6 +72,7 @@ export default function Categories() {
             {categories?.map((item) => (
               <div key={item.id} className="mx-c-3 lg:mx-c-5">
                 <motion.div
+                  onClick={() => router.push(`/shop?cat=${item.categoryId}`)}
                   className="relative w-c-70 h-c-100 bg-pink-100 dark:bg-[#2A202A] border-3 border-dashed border-pink-600 dark:border-pink-300 rounded-c-8 shadow-xl overflow-hidden cursor-pointer"
                   whileHover={{ scale: 1.05, rotate: 1 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}

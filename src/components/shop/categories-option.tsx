@@ -21,20 +21,14 @@ export default function CategoriesOption() {
 
   const handleToggleCategory = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    const newSelected = [...selectedCategories];
-    const index = newSelected.indexOf(id);
 
-    if (index > -1) {
-      newSelected.splice(index, 1);
-    } else {
-      newSelected.push(id);
-    }
-
-    if (newSelected.length > 0) {
-      params.set("cat", newSelected.join(","));
-    } else {
+    if (currentCatParams === id) {
       params.delete("cat");
+    } else {
+      params.set("cat", id);
     }
+
+    params.set("page", "1");
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
@@ -86,9 +80,6 @@ export default function CategoriesOption() {
                 className="rounded-full size-c-6"
                 id={id}
                 checked={selectedCategories.includes(id)}
-                // onCheckedChange={() => {
-                //   dispatch(toggleSelectedCatagories(id));
-                // }}
                 onCheckedChange={() => handleToggleCategory(id)}
               />
               <label className="text-c-6 cursor-pointer" htmlFor={id}>

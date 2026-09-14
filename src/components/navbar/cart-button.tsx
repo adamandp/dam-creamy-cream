@@ -24,7 +24,7 @@ export default function CartButton() {
         {isPending ? (
           <Loader2 className="w-3/4 h-3/4 animate-spin" />
         ) : (
-          carts?.length || 0
+          carts?.map((item) => item.qty).reduce((a, b) => a + b, 0) || 0
         )}
       </span>
     </motion.div>
