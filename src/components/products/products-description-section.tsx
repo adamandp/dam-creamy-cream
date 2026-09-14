@@ -42,12 +42,12 @@ export default function ProductDescriptionSection({ slug }: { slug: string }) {
     }
 
     mutate({
-      items: [{ productId: data.id, quantity: qty }],
+      item: { productId: data.id, quantity: qty },
       details: {
         name: data.name,
         imageUrl: data.imageUrl,
         category: data.category,
-        origPrice: data.origPrice,
+        price: data.price,
         discountPrice: data.discountPrice,
       },
     });
@@ -72,7 +72,7 @@ export default function ProductDescriptionSection({ slug }: { slug: string }) {
           <h1 className="text-c-7-5 font-bold">{data?.name}</h1>
           <div className="flex items-center gap-c-5 divide-x-2 text-c-5">
             <p className="pr-c-8">
-              {"⭐".repeat(data?.rate || 0)} ({data?.rate}/5)
+              {"⭐".repeat(data?.rate || 0)} ({data?.rate.toFixed(1)}/5)
             </p>
             <p className="font-medium pr-c-8">{data?.category}</p>
             <div className="font-medium">
@@ -84,21 +84,28 @@ export default function ProductDescriptionSection({ slug }: { slug: string }) {
           </div>
         </div>
         <div className="flex gap-c-3 items-center border-y border-border py-c-4">
-          {(data?.discountPrice || 0) < (data?.origPrice || 0) && (
+          {data?.discountPrice && (
             <span className="text-c-6 line-through text-muted-foreground">
-              {rupiahFormatter.format(data?.origPrice || 0)}
+              {rupiahFormatter.format(data?.price)}
             </span>
           )}
           <span className="text-c-7-5 font-bold text-pink-500">
-            {rupiahFormatter.format(data?.discountPrice || 0)}
+            {rupiahFormatter.format(
+              data.discountPrice ? data.discountPrice : data.price,
+            )}
           </span>
         </div>
         <p className="text-c-5 text-muted-foreground">{data?.description}</p>
         <div className="flex items-center gap-c-4 ">
           <div className="flex items-center gap-c-3">
+            {/* 2. PERBAIKAN DI SINI: Tambah e.preventDefault() & stopPropagation() */}
             <Button
               size="icon"
-              onClick={() => setQty(qty - 1)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setQty(qty - 1);
+              }}
               disabled={qty === 1}
             >
               <MinusIcon className="size-c-5 stroke-3" />
@@ -106,11 +113,16 @@ export default function ProductDescriptionSection({ slug }: { slug: string }) {
             <span className="text-c-5">{qty}</span>
             <Button
               size="icon"
-              onClick={() => setQty(qty + 1)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setQty(qty + 1);
+              }}
               disabled={qty === 99}
             >
               <PlusIcon className="size-c-5 stroke-3" />
             </Button>
+            {/* ------------------------------------------------------------- */}
           </div>
           <Button onClick={handleAddToCart} disabled={isPending}>
             Add to cart <ArrowRight className="size-c-6" />

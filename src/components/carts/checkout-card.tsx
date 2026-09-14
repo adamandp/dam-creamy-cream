@@ -14,14 +14,13 @@ export default function CheckoutCard() {
   );
 
   const subtotal = checkoutItems.reduce(
-    (acc, item) => acc + item.origPrice * item.qty,
+    (acc, item) => acc + item.price * item.qty,
     0,
   );
 
   const totalDiscount = checkoutItems.reduce(
     (acc, item) =>
-      acc +
-      (item.origPrice - (item.discountPrice ?? item.origPrice)) * item.qty,
+      acc + (item.price - (item.discountPrice ?? item.price)) * item.qty,
     0,
   );
 

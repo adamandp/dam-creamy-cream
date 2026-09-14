@@ -7,11 +7,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { productApi } from "@/services/product-api";
 import { UUID } from "crypto";
 import { reviewsApi } from "@/services/reviews-api";
+import { AddToCartDto } from "@/types/carts-interface";
 
 export default function TabsProduct({ slug }: { slug: string }) {
   const [rate, setRate] = useState<number>(0);
@@ -28,7 +29,7 @@ export default function TabsProduct({ slug }: { slug: string }) {
 
   const { data: productReview, isLoading: reviewLoading } = useQuery({
     queryKey: ["product-review", slug],
-    queryFn: () => productApi.getProductReview(slug),
+    queryFn: () => reviewsApi.getProductReview(slug),
   });
 
   const mutation = useMutation({
@@ -44,10 +45,10 @@ export default function TabsProduct({ slug }: { slug: string }) {
       const previousReviews = queryClient.getQueryData(reviewQueryKey);
 
       // We manually add a temporary review to the UI
-      queryClient.setQueryData(reviewQueryKey, (old: any) => [
+      queryClient.setQueryData(reviewQueryKey, (old: AddToCartDto[]) => [
         {
           id: "temp-id",
-          name: "You", // Placeholder name
+          name: "You",
           rate: newReview.rate,
           review: newReview.review,
           imageUrl: "",
@@ -188,13 +189,23 @@ export default function TabsProduct({ slug }: { slug: string }) {
                 key={`${item.name}-${idx}`}
                 className="flex items-start gap-c-4 p-c-4 bg-white/5 rounded-c-5 border border-white/5 transition hover:bg-white/8"
               >
-                <Image
-                  width={48}
-                  height={48}
-                  src={item.imageUrl || "/placeholder-avatar.png"}
-                  alt={item.name}
-                  className="w-c-12 h-c-12 rounded-full object-cover border-2 border-primary/20"
-                />
+                {/* --- BAGIAN YANG DIUBAH: Pengecekan Image URL --- */}
+                {item.imageUrl ? (
+                  <Image
+                    width={48}
+                    height={48}
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="w-c-12 h-c-12 rounded-full object-cover border-2 border-primary/20 shrink-0"
+                  />
+                ) : (
+                  <div className="w-c-12 h-c-12 rounded-full bg-secondary/10 flex items-center justify-center border-2 border-primary/20 shrink-0">
+                    <UserCircle2
+                      className="w-c-8 h-c-8 text-muted-foreground/60"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                )}
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-c-1">
                     <h4 className="text-c-6 font-semibold text-white">
@@ -208,7 +219,7 @@ export default function TabsProduct({ slug }: { slug: string }) {
                     </div>
                   </div>
                   <p className="text-c-5 text-muted-foreground/90 leading-relaxed italic">
-                    "{item.review}"
+                    {item.comment}
                   </p>
                   <p className="text-c-3 uppercase tracking-wider text-muted-foreground/40 mt-c-2 font-medium">
                     {item.createdAt

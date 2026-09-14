@@ -22,7 +22,7 @@ interface CardProductProps {
   imageUrl: string;
   description: string;
   rate: number;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   discountType?: DiscountTypeEnum | null;
   discountValue?: number | null;
@@ -35,7 +35,7 @@ export default function CardProduct({
   imageUrl,
   description,
   rate,
-  origPrice,
+  price,
   discountPrice,
   discountType,
   discountValue,
@@ -43,36 +43,34 @@ export default function CardProduct({
   const queryClient = useQueryClient();
 
   const addToCartMutation = useMutation({
-    mutationFn: (req: AddToCartDto[]) => cartApi.addToCart(req),
+    mutationFn: (req: AddToCartDto) => cartApi.addToCart(req),
 
     onMutate: async (req) => {
       await queryClient.cancelQueries({ queryKey: ["cart"] });
 
       const previousCart = queryClient.getQueryData<CartItemRes[]>(["cart"]);
 
-      queryClient.setQueryData<CartItemRes[]>(["cart"], (old = []) => {
+      queryClient.setQueryData<CartItemRes[]>(["carts"], (old = []) => {
         const updated = [...old];
 
-        req.forEach((r) => {
-          const index = updated.findIndex((i) => i.id === r.productId);
+        const index = updated.findIndex((i) => i.id === req.productId);
 
-          if (index !== -1) {
-            updated[index] = {
-              ...updated[index],
-              qty: updated[index].qty + r.quantity,
-            };
-          } else {
-            updated.push({
-              id,
-              name,
-              imageUrl,
-              category: "",
-              origPrice,
-              discountPrice: discountPrice ?? null,
-              qty: r.quantity,
-            });
-          }
-        });
+        if (index !== -1) {
+          updated[index] = {
+            ...updated[index],
+            qty: updated[index].qty + req.quantity,
+          };
+        } else {
+          updated.push({
+            id,
+            name,
+            imageUrl,
+            category: "",
+            price,
+            discountPrice: discountPrice ?? null,
+            qty: req.quantity,
+          });
+        }
 
         return updated;
       });
@@ -105,12 +103,10 @@ export default function CardProduct({
       animateFlyToCart(productImg, cartBtn);
     }
 
-    addToCartMutation.mutate([
-      {
-        productId: id,
-        quantity: 1,
-      },
-    ]);
+    addToCartMutation.mutate({
+      productId: id,
+      quantity: 1,
+    });
   };
 
   return (
@@ -144,11 +140,12 @@ export default function CardProduct({
           height={1000}
           priority
           className="h-c-61 w-full object-contain"
+          loading="eager"
         />
       </div>
       <div className="flex justify-between mt-c-5">
         <p className="text-c-5 font-bold">{name}</p>
-        <h4 className="font-semibold text-c-4 mt-c-1">⭐{rate}/5</h4>
+        <h4 className="font-semibold text-c-4 mt-c-1">⭐{rate.toFixed(1)}/5</h4>
       </div>
       <p
         className="text-c-4 text-foreground mt-c-3 overflow-hidden"
@@ -164,11 +161,11 @@ export default function CardProduct({
         <div className="flex gap-c-2 items-center">
           {discountPrice && (
             <p className="text-c-4-5 text-muted-foreground line-through">
-              {rupiahFormatter.format(origPrice)}
+              {rupiahFormatter.format(price)}
             </p>
           )}
           <p className="text-c-5-5 font-bold text-pink-500">
-            {rupiahFormatter.format(discountPrice ? discountPrice : origPrice)}
+            {rupiahFormatter.format(discountPrice ? discountPrice : price)}
           </p>
         </div>
         <Button

@@ -6,24 +6,24 @@ interface ProductDetails {
   name: string;
   imageUrl: string;
   category: string;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
 }
 
 interface AddToCartPayload {
-  items: AddToCartDto[];
+  item: AddToCartDto;
   details?: ProductDetails;
 }
 
-const queryKey = ["cart"];
+const queryKey = ["carts"];
 
 export const useAddToCart = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ items }: AddToCartPayload) => cartApi.addToCart(items),
+    mutationFn: ({ item }: AddToCartPayload) => cartApi.addToCart(item),
 
-    onMutate: async ({ items, details }) => {
+    onMutate: async ({ item, details }) => {
       await queryClient.cancelQueries({ queryKey });
 
       const previousCart = queryClient.getQueryData<CartItemRes[]>(queryKey);
@@ -31,26 +31,24 @@ export const useAddToCart = () => {
       queryClient.setQueryData<CartItemRes[]>(queryKey, (old = []) => {
         const updated = [...old];
 
-        items.forEach((item) => {
-          const index = updated.findIndex((i) => i.id === item.productId);
+        const index = updated.findIndex((i) => i.id === item.productId);
 
-          if (index !== -1) {
-            updated[index] = {
-              ...updated[index],
-              qty: updated[index].qty + item.quantity,
-            };
-          } else if (details) {
-            updated.push({
-              id: item.productId,
-              name: details.name,
-              imageUrl: details.imageUrl,
-              category: details.category,
-              origPrice: details.origPrice,
-              discountPrice: details.discountPrice ?? null,
-              qty: item.quantity,
-            });
-          }
-        });
+        if (index !== -1) {
+          updated[index] = {
+            ...updated[index],
+            qty: updated[index].qty + item.quantity,
+          };
+        } else if (details) {
+          updated.push({
+            id: item.productId,
+            name: details.name,
+            imageUrl: details.imageUrl,
+            category: details.category,
+            price: details.price,
+            discountPrice: details.discountPrice ?? null,
+            qty: item.quantity,
+          });
+        }
 
         return updated;
       });

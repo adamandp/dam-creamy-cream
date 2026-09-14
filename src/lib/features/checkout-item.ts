@@ -5,7 +5,7 @@ interface CheckoutItem {
   qty: number;
   imageUrl: string;
   name: string;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
 }
 
@@ -14,24 +14,7 @@ interface CheckoutState {
 }
 
 const initialState: CheckoutState = {
-  items: [
-    {
-      id: "7d2b45a1-0b3c-4e8d-8a9f-2c3d4e5f6a7b",
-      name: "Velvet Cake Delight",
-      imageUrl: "/products/cake2.png",
-      origPrice: 65000,
-      discountPrice: 45500,
-      qty: 1,
-    },
-    {
-      id: "8f9e0d1c-2b3a-4b5c-6d7e-8f9a0b1c2d3e",
-      name: "Classic Creamy Dream",
-      imageUrl: "/products/classic2.png",
-      origPrice: 32000,
-      discountPrice: null,
-      qty: 1,
-    },
-  ],
+  items: [],
 };
 
 const checkoutSlice = createSlice({

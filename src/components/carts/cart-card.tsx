@@ -32,7 +32,7 @@ type CartCardProps = {
   name: string;
   imageUrl: string;
   category: string;
-  origPrice: number;
+  price: number;
   discountPrice?: number | null;
   qty: number;
   className?: string;
@@ -43,7 +43,7 @@ export default function CartCard({
   name,
   imageUrl,
   category,
-  origPrice,
+  price,
   discountPrice,
   qty,
   className,
@@ -60,7 +60,7 @@ export default function CartCard({
   const queryClient = useQueryClient();
 
   const addToCartMutation = useMutation({
-    mutationFn: (req: AddToCartDto[]) => cartApi.addToCart(req),
+    mutationFn: (req: AddToCartDto) => cartApi.addToCart(req),
 
     onMutate: async (req) => {
       await queryClient.cancelQueries({ queryKey: ["carts"] });
@@ -70,16 +70,14 @@ export default function CartCard({
       queryClient.setQueryData<CartItemRes[]>(["carts"], (old = []) => {
         const updated = [...old];
 
-        req.forEach((r) => {
-          const index = updated.findIndex((i) => i.id === r.productId);
+        const index = updated.findIndex((i) => i.id === req.productId);
 
-          if (index !== -1) {
-            updated[index] = {
-              ...updated[index],
-              qty: updated[index].qty + r.quantity,
-            };
-          }
-        });
+        if (index !== -1) {
+          updated[index] = {
+            ...updated[index],
+            qty: updated[index].qty + req.quantity,
+          };
+        }
 
         return updated;
       });
@@ -97,7 +95,7 @@ export default function CartCard({
   });
 
   const removeFromCartMutation = useMutation({
-    mutationFn: (req: RemoveFromCartDto[]) => cartApi.removeFromCart(req),
+    mutationFn: (req: RemoveFromCartDto) => cartApi.removeFromCart(req),
 
     onMutate: async (req) => {
       await queryClient.cancelQueries({ queryKey: ["carts"] });
@@ -107,22 +105,20 @@ export default function CartCard({
       queryClient.setQueryData<CartItemRes[]>(["carts"], (old = []) => {
         const updated = [...old];
 
-        req.forEach((r) => {
-          const index = updated.findIndex((i) => i.id === r.productId);
+        const index = updated.findIndex((i) => i.id === req.productId);
 
-          if (index !== -1) {
-            const item = updated[index];
+        if (index !== -1) {
+          const item = updated[index];
 
-            if (item.qty <= r.quantity) {
-              updated.splice(index, 1);
-            } else {
-              updated[index] = {
-                ...item,
-                qty: item.qty - r.quantity,
-              };
-            }
+          if (item.qty <= req.quantity) {
+            updated.splice(index, 1);
+          } else {
+            updated[index] = {
+              ...item,
+              qty: item.qty - req.quantity,
+            };
           }
-        });
+        }
 
         return updated;
       });
@@ -161,7 +157,7 @@ export default function CartCard({
                   id,
                   name,
                   imageUrl,
-                  origPrice,
+                  price,
                   discountPrice,
                   qty,
                 }),
@@ -190,11 +186,12 @@ export default function CartCard({
             <div className="flex gap-c-2 items-center sm:w-c-30 sm:order-2 justify-start sm:justify-end sm:ml-auto">
               {discountPrice && (
                 <p className="text-c-4 text-muted-foreground line-through ">
-                  {rupiahFormatter.format(origPrice * qty)}
+                  {rupiahFormatter.format(price * qty)}
                 </p>
               )}
               <h3 className="text-c-5 font-bold text-pink-500 sm:text-end ">
-                {rupiahFormatter.format(discountPrice ?? origPrice * qty)}
+                {/* 3. Pastikan harga diskon juga dikali qty */}
+                {rupiahFormatter.format((discountPrice ?? price) * qty)}
               </h3>
             </div>
             <div className="flex items-center gap-c-3 sm:ml-auto">
@@ -206,12 +203,10 @@ export default function CartCard({
                   e.preventDefault();
                   e.stopPropagation();
 
-                  removeFromCartMutation.mutate([
-                    {
-                      productId: id,
-                      quantity: 1,
-                    },
-                  ]);
+                  removeFromCartMutation.mutate({
+                    productId: id,
+                    quantity: 1,
+                  });
                 }}
               >
                 <MinusIcon className="size-c-5 stroke-3" />
@@ -226,12 +221,10 @@ export default function CartCard({
                   e.preventDefault();
                   e.stopPropagation();
 
-                  addToCartMutation.mutate([
-                    {
-                      productId: id,
-                      quantity: 1,
-                    },
-                  ]);
+                  addToCartMutation.mutate({
+                    productId: id,
+                    quantity: 1,
+                  });
                 }}
               >
                 <PlusIcon className="size-c-4 stroke-3" />
@@ -240,30 +233,26 @@ export default function CartCard({
           </div>
         </div>
         <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <AlertDialogTrigger
-            asChild
+          <div
             onClick={(e) => {
+              // 1. Tangkap event click di bungkus luar Trigger
+              // Mencegah link Next.js terpanggil, tapi tetap membiarkan Trigger hidup
+              e.preventDefault();
               e.stopPropagation();
             }}
           >
-            <Button
-              size="icon"
-              className="size-c-10! text-pink-500"
-              variant={"outline"}
-              onClick={(e) => {
-                e.stopPropagation();
-
-                removeFromCartMutation.mutate([
-                  {
-                    productId: id,
-                    quantity: qty,
-                  },
-                ]);
-              }}
-            >
-              <X className="size-c-5" />
-            </Button>
-          </AlertDialogTrigger>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="icon"
+                className="size-c-10! text-pink-500"
+                variant={"outline"}
+                // 2. Set state secara manual saat tombol di klik
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <X className="size-c-5" />
+              </Button>
+            </AlertDialogTrigger>
+          </div>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle className="text-c-6">
@@ -275,14 +264,23 @@ export default function CartCard({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+              {/* 3. Gunakan onOpenChange via state, hindari event handler langsung jika tidak perlu */}
+              <AlertDialogCancel onClick={() => setIsDialogOpen(false)}>
                 Oops, cancel
               </AlertDialogCancel>
+
               <AlertDialogAction
                 className="bg-pink-500 hover:bg-pink-600"
                 onClick={(e) => {
-                  // dispatch(deleteItem(id))
+                  // Mencegah Link Next.js (meski biasanya tidak memicu karena diluar hierarki dom, tapi aman)
+                  e.preventDefault();
                   e.stopPropagation();
+
+                  removeFromCartMutation.mutate({
+                    productId: id,
+                    quantity: qty,
+                  });
+                  setIsDialogOpen(false); // Tutup dialog setelah mutasi
                 }}
               >
                 Yup, delete it
