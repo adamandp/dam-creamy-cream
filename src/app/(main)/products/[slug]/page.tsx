@@ -1,4 +1,5 @@
 import ProductDescriptionSection from "@/components/products/products-description-section";
+import RelatedProduct from "@/components/products/products-related";
 import TabsProduct from "@/components/products/products-tabs-section";
 
 interface PageProps {
@@ -12,7 +13,7 @@ export default async function Page({ params }: PageProps) {
     <div className="content-container py-c-10 w-full">
       <ProductDescriptionSection slug={slug} />
       <TabsProduct slug={slug} />
-      {/* <RelatedProduct /> */}
+      <RelatedProduct id={slug} />
     </div>
   );
 }
