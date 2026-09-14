@@ -15,6 +15,7 @@ import { hoverEffect, tapEffect } from "@/utils/motion-effects";
 import CartButton from "./cart-button";
 import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
+import NotificationButton from "./notification-button";
 // import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
@@ -106,8 +107,9 @@ export default function Navbar() {
                 </motion.div>
               )}
               <Link href={"/carts"} id="cart-button-desktop">
-                <CartButton />
+                {/* <CartButton /> */}
               </Link>
+              <NotificationButton />
             </AnimatePresence>
             <ThemeToggle />
           </ul>
@@ -150,6 +152,9 @@ export default function Navbar() {
           <Link href={"/carts"} id="cart-button-mobile">
             <CartButton />
           </Link>
+
+          <NotificationButton size="size-c-7 md:size-c-9" />
+
           {/* <Link href="/profile" id="cart-button-mobile">
             <motion.div
               whileHover={{ ...hoverEffect() }}
